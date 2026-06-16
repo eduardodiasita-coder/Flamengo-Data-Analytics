@@ -42,5 +42,3 @@ Este projeto simula um ambiente real de **Scouting e Inteligência de Mercado** 
 3. **Eficiência de Processamento:** Substituição de servidores pesados por uma aplicação estática leve baseada em compilação HTML nativa, reduzindo o custo de infraestrutura e eliminando gargalos de carregamento.
 
 O painel demonstra maturidade em Engenharia de Software ao transformar dados brutos em inteligência visual estável, servindo como uma base sólida para sistemas de monitoramento de atletas em tempo real.
-
-> *"No mundo do futebol moderno, os dados moldam o ego dos craques."* 👁️🔬
