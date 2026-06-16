@@ -2,7 +2,7 @@
 
 Um painel analítico e interativo de desempenho técnico inspirado na estética de dados, evolução e menus de **EA FC/FIFA**. O projeto monitora as estatísticas e os atributos de 12 jogadores do elenco profissional do Flamengo.
 
-🌐 **Acesse o sistema online aqui:** [COLE O SEU LINK AZUL DO GITHUB PAGES AQUI]
+🌐 **Acesse o sistema online aqui:** [ https://eduardodiasita-coder.github.io/Flamengo-Data-Analytics/]
 
 ---
 
