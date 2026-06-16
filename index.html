@@ -1,1 +1,195 @@
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+# 1. BANCO DE DADOS COMPLETO E PROTEGIDO
+dados_limpos = {
+    "Pedro": {"atributos": "95-60-10-70-75", "historico": "82-75-85-96-90", "cor": "#FF0000", "status": "Titular Absoluto", "contrato": "Até Dez/2029"},
+    "Arrascaeta": {"atributos": "75-95-30-88-70", "historico": "88-74-80-98-92", "cor": "#00FFFF", "status": "Capitão / Cérebro do Time", "contrato": "Até Dez/2028"},
+    "Bruno Henrique": {"atributos": "85-75-25-80-95", "historico": "40-70-78-91-85", "cor": "#E5EC03", "status": "Infiltrador Veloz", "contrato": "Até Dez/2027"},
+    "De La Cruz": {"atributos": "65-85-45-85-80", "historico": "75-80-86-94-89", "cor": "#0022CA", "status": "Motor do Meio-Campo", "contrato": "Até Dez/2028"},
+    "Léo Pereira": {"atributos": "35-20-90-40-72", "historico": "80-72-88-93-87", "cor": "#FF6B00", "status": "Pilar Defensivo", "contrato": "Até Dez/2028"},
+    "Gerson": {"atributos": "78-86-65-84-76", "historico": "72-78-85-97-91", "cor": "#00FF00", "status": "Líder Técnico / Coringa", "contrato": "Até Dez/2027"},
+    "Everton Cebolinha": {"atributos": "78-75-35-90-88", "historico": "68-80-86-91-87", "cor": "#FF0055", "status": "Driblador / Ponta Invertido", "contrato": "Até Dez/2027"},
+    "Luiz Araújo": {"atributos": "76-80-45-86-91", "historico": "70-78-84-88-84", "cor": "#FF00FF", "status": "Ponta Agudo / Velocista", "contrato": "Até Dez/2027"},
+    "Fabricio Bruno": {"atributos": "40-15-92-35-88", "historico": "78-82-86-90-85", "cor": "#FFFFFF", "status": "Zagueiro de Velocidade", "contrato": "Até Dez/2028"},
+    "Ayrton Lucas": {"atributos": "70-75-74-78-93", "historico": "80-76-82-88-84", "cor": "#6E4900", "status": "Lateral Ofensivo / 'Beijinho'", "contrato": "Até Dez/2027"},
+    "Erick Pulgar": {"atributos": "72-82-80-68-70", "historico": "65-84-82-89-83", "cor": "#9933FF", "status": "Equilíbrio Tático / Primeiro Volante", "contrato": "Até Dez/2026"},
+    "Agustín Rossi": {"atributos": "10-25-96-30-68", "historico": "75-80-88-94-88", "cor": "#8AFF8A", "status": "Muralha do Gol / Inabalável", "contrato": "Até Dez/2027"},
+}
+
+dados_jogadores = {}
+for jogador, info in dados_limpos.items():
+    dados_jogadores[jogador] = {
+        "atributos": [int(x) for x in info["atributos"].split("-")],
+        "historico": [int(x) for x in info["historico"].split("-")],
+        "cor": info["cor"],
+        "status": info["status"],
+        "contrato": info["contrato"]
+    }
+
+nomes_atributos = ['Gols', 'Assistências', 'Defesas', 'Dribles', 'Velocidade']
+anos_historico = ['2022', '2023', '2024', '2025', '2026']
+
+def gerar_texto_lista(nome_jogador):
+    jogador_info = dados_jogadores[nome_jogador]
+    atrs = jogador_info["atributos"]
+    cor_jogador = jogador_info["cor"]
+    
+    texto = f"<b>📊 {nome_jogador} - Perfil Técnico</b><br>"
+    texto += f"<span style='color:#A0A0B8'>Função:</span> <b>{jogador_info['status']}</b><br>"
+    texto += f"<span style='color:#A0A0B8'>Vínculo:</span> <b>{jogador_info['contrato']}</b><br><br>"
+    
+    for nome_atr, valor in zip(nomes_atributos, atrs):
+        blocos_cheios = valor // 10
+        blocos_vazios = 10 - blocos_cheios
+        barra_visual = "■" * blocos_cheios + "□" * blocos_vazios
+        nota_formatada = str(valor).zfill(2)
+        texto += f"• {nome_atr.ljust(13)}: <b>{nota_formatada}</b> <span style='color:{cor_jogador}'>{barra_visual}</span><br>"
+        
+    valor_geral = sum(atrs) // 5
+    blocos_g_cheios = valor_geral // 10
+    barra_geral = "■" * blocos_g_cheios + "□" * (10 - blocos_g_cheios)
+    
+    texto += "<br>"
+    texto += f"• Geral        : <b>{str(valor_geral).zfill(2)}</b> <span style='color:{cor_jogador}'>{barra_geral}</span><br>"
+    return texto
+
+def gerar_texto_estatisticas(nome_jogador):
+    historico = dados_jogadores[nome_jogador]["historico"]
+    media = sum(historico) / len(historico)
+    nota_max = max(historico)
+    ano_max = anos_historico[historico.index(nota_max)]
+    nota_min = min(historico)
+    ano_min = anos_historico[historico.index(nota_min)]
+    
+    texto = f"<b>📈 {nome_jogador} - Estatísticas de Campo</b><br><br>"
+    texto += f"• Média Geral: <b style='color:#00FF00'>{media:.1f}</b><br><br>"
+    texto += f"• Melhor Desempenho: <b>{nota_max}</b> (Ano {ano_max})<br>"
+    texto += f"• Pior Desempenho: <b>{nota_min}</b> (Ano {ano_min})<br>"
+    return texto
+
+# 2. Estrutura do painel com títulos originais e estáveis de fábrica
+fig = make_subplots(
+    rows=1, cols=2, 
+    specs=[[{"type": "polar"}, {"type": "scatter"}]],
+    subplot_titles=("Atributos Técnicos", "Desempenho em Campo")
+)
+
+# 3. Laço para carregar todos os jogadores nos gráficos
+for nome, dados in dados_jogadores.items():
+    visivel = True if nome == "Pedro" else False
+    hex_cor = dados['cor'].lstrip('#')
+    r, g, b = tuple(int(hex_cor[i:i+2], 16) for i in (0, 2, 4))
+    
+    primeira_nota = [dados["atributos"][0]]
+    r_radar = dados["atributos"] + primeira_nota
+    
+    fig.add_trace(go.Scatterpolar(
+        r=r_radar, 
+        theta=nomes_atributos + [nomes_atributos[0]],
+        fill='toself',
+        fillcolor=f"rgba({r}, {g}, {b}, 0.15)",
+        line=dict(color=dados["cor"], width=2.5),
+        name=nome,
+        visible=visivel,
+        hovertemplate="<b>%{theta}</b>: %{r}<extra></extra>"
+    ), row=1, col=1)
+    
+    fig.add_trace(go.Scatter(
+        x=['2022', '2023', '2024', '2025', '2026'],
+        y=dados["historico"],
+        mode='lines+markers',
+        line=dict(color=dados["cor"], width=3.5),
+        marker=dict(size=10, color=dados["cor"]),
+        name=nome,
+        visible=visivel,
+        hovertemplate="<b>Ano %{x}</b><br>Desempenho: %{y}<extra></extra>"
+    ), row=1, col=2)
+
+# CRIANDO OS RETÂNGULOS ORIGINAIS FIXADOS COM LARGURA EM 310 PIXELS (Anotações 2 e 3)
+fig.add_annotation(
+    text=gerar_texto_lista("Pedro"),
+    align="left", valign="top", showarrow=False,
+    xref="paper", yref="paper", x=0.01, y=-0.12, xanchor="left", yanchor="top",
+    font=dict(color="#FFFFFF", size=11, family="Courier New"), 
+    bordercolor="#FF0000", borderwidth=2, borderpad=12, bgcolor="#111122", opacity=0.9,
+    width=310
+)
+
+fig.add_annotation(
+    text=gerar_texto_estatisticas("Pedro"),
+    align="left", valign="top", showarrow=False,
+    xref="paper", yref="paper", x=0.99, y=-0.12, xanchor="right", yanchor="top",
+    font=dict(color="#FFFFFF", size=11, family="Courier New"), 
+    bordercolor="#FF0000", borderwidth=2, borderpad=12, bgcolor="#111122", opacity=0.9,
+    width=310
+)
+
+# 4. Lógica de atualização dos botões seletores
+botoes = []
+for i, nome in enumerate(dados_jogadores.keys()):
+    visibilidade = [False] * (len(dados_jogadores) * 2)
+    visibilidade[i * 2] = True     
+    visibilidade[i * 2 + 1] = True 
+    
+    cor_jogador = dados_jogadores[nome]["cor"]
+    
+    botoes.append(dict(
+        label=nome,
+        method="update",
+        args=[
+            {"visible": visibilidade}, 
+            {
+                "title.text": f"Flamengo Data Analytics - Perfil de {nome}",
+                "annotations[2].text": gerar_texto_lista(nome),
+                "annotations[3].text": gerar_texto_estatisticas(nome),
+                "annotations[2].bordercolor": cor_jogador,
+                "annotations[3].bordercolor": cor_jogador,
+                "annotations[2].width": 310,
+                "annotations[3].width": 310
+            }
+        ]
+    ))
+
+# 5. Configurações gerais do layout escuro com os botões altos
+fig.update_layout(
+    title=dict(
+        text="Flamengo Data Analytics - Perfil de Pedro",
+        font=dict(size=22, color='#FFFFFF'),
+        y=0.96, x=0.01, xanchor='left', yanchor='top'
+    ),
+    margin=dict(t=160, b=250), 
+    paper_bgcolor='#1A1A2E',
+    plot_bgcolor='#1A1A2E',
+    font=dict(color='#A0A0B8', size=12),
+    showlegend=False,
+    updatemenus=[dict(
+        type="buttons",         
+        direction="left",       
+        active=0, buttons=botoes, pad={"r": 10, "t": 10}, showactive=True,
+        x=0.01, xanchor="left", 
+        y=1.12,             
+        yanchor="bottom",   
+        bgcolor="#303056", font=dict(color="#FFFFFF", size=12)
+    )]
+)
+
+fig.update_polars(bgcolor='#1A1A2E', angularaxis=dict(gridcolor='#303056'), radialaxis=dict(gridcolor='#303056', showticklabels=True, range=[0, 100]))
+fig.update_xaxes(gridcolor='#303056', zeroline=False, row=1, col=2)
+fig.update_yaxes(title_text="Métrica de Desempenho (0 a 100)", title_font=dict(color='#A0A0B8', size=11), gridcolor='#303056', zeroline=False, range=[0, 100], row=1, col=2)
+
+
+fig.write_html("dashboard.html")
+
+with open("dashboard.html", "r", encoding="utf-8") as f:
+    html_conteudo = f.read()
+
+# Substitui o início do cabeçalho injetando o título que você quer
+html_conteudo = html_conteudo.replace("<head>", "<head><title>Flamengo Data Analytics</title>")
+
+with open("dashboard.html", "w", encoding="utf-8") as f:
+    f.write(html_conteudo)
+
+# 3. Abre a janela do gráfico temporária original
+fig.show()
 
